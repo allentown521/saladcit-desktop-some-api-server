@@ -4,7 +4,7 @@ use chrono::Datelike;
 use serde_json::{json, Value};
 use std::error::Error;
 
-#[get("/afdian")]
+#[get("/api/afdian")]
 pub async fn afdian() -> Result<impl Responder, Box<dyn Error>> {
     let client = reqwest::Client::new();
     let first_data = request_afdian_by_page(&client, 1).await?;
