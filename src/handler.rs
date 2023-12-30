@@ -187,7 +187,7 @@ pub async fn dict(info: web::Json<Info>) -> Result<impl Responder, Box<dyn Error
     Err("Not found".into())
 }
 
-#[get("/api/ali_qrcode")]
+#[post("/api/ali_qrcode")]
 pub async fn ali_qrcode() -> Result<impl Responder, Box<dyn Error>> {
     let client = reqwest::Client::new();
 
