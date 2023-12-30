@@ -186,3 +186,61 @@ pub async fn dict(info: web::Json<Info>) -> Result<impl Responder, Box<dyn Error
     }
     Err("Not found".into())
 }
+
+#[get("/api/ali_qrcode")]
+pub async fn ali_qrcode() -> Result<impl Responder, Box<dyn Error>> {
+    let client = reqwest::Client::new();
+
+    let res: Value = client
+        .post("https://openapi.alipan.com/oauth/authorize/qrcode")
+        .header("Content-Type", "application/json")
+        .json(&json!({
+          "client_id": crate::ALIPAN_CLIENTID,
+          "client_secret":crate::ALIPAN_SECRET,
+          "scopes": [
+            "user:base",
+            "file:all:read",
+            "file:all:write"
+          ]
+        }))
+        .send()
+        .await?
+        .json()
+        .await?;
+    Ok(res.to_string())
+}
+
+#[derive(Deserialize)]
+pub struct Code {
+    code: String,
+    refresh_token: String,
+}
+
+#[get("/api/ali_access_token")]
+pub async fn ali_access_token(code: web::Json<Code>) -> Result<impl Responder, Box<dyn Error>> {
+    let client = reqwest::Client::new();
+    let mut body = json!({
+      "client_id": crate::ALIPAN_CLIENTID,
+      "client_secret":crate::ALIPAN_SECRET,
+      "grant_type": "authorization_code",
+    });
+    if !code.code.is_empty() {
+        body.as_object_mut()
+            .unwrap()
+            .insert("code".to_string(), json!(code.refresh_token));
+    }
+    if !code.refresh_token.is_empty() {
+        body.as_object_mut()
+            .unwrap()
+            .insert("refresh_token".to_string(), json!(code.refresh_token));
+    }
+    let res: Value = client
+        .post("https://openapi.alipan.com/oauth/access_token")
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .send()
+        .await?
+        .json()
+        .await?;
+    Ok(res.to_string())
+}

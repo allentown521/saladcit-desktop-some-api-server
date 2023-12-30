@@ -1,0 +1,31 @@
+name: Release CI
+
+on: workflow_dispatch
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Change Env Value
+        run: |
+          sed -i "s/\"ALIPAN_CLIENTID\"/${{ secrets.ALIPAN_CLIENTID }}/g" src/main.rs
+          sed -i "s/\"ALIPAN_SECRET\"/${{ secrets.ALIPAN_SECRET }}/g" src/main.rs
+          sed -i "s/\"AFDIAN_USER_ID\"/${{ secrets.AFDIAN_USER_ID }}/g" src/main.rs
+          sed -i "s/\"AFDIAN_TOKEN\"/${{ secrets.AFDIAN_TOKEN }}/g" src/main.rs
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: server
+          tag_name: server
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            target/release/pot-docs-server
