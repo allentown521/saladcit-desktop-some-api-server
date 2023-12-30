@@ -216,7 +216,7 @@ pub struct Code {
     refresh_token: String,
 }
 
-#[get("/api/ali_access_token")]
+#[post("/api/ali_access_token")]
 pub async fn ali_access_token(code: web::Json<Code>) -> Result<impl Responder, Box<dyn Error>> {
     let client = reqwest::Client::new();
     let mut body = json!({
