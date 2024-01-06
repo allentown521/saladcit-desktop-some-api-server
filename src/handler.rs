@@ -227,7 +227,7 @@ pub async fn ali_access_token(code: web::Json<Code>) -> Result<impl Responder, B
     if !code.code.is_empty() {
         body.as_object_mut()
             .unwrap()
-            .insert("code".to_string(), json!(code.refresh_token));
+            .insert("code".to_string(), json!(code.code));
     }
     if !code.refresh_token.is_empty() {
         body.as_object_mut()
