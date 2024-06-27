@@ -11,7 +11,7 @@ pub static ALIPAN_SECRET: &str = "ALIPAN_SECRET";
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let args: Vec<String> = std::env::args().collect();
-    let port = match args.first() {
+    let port = match args.get(1) {
         Some(port) => port,
         None => "8001",
     };
